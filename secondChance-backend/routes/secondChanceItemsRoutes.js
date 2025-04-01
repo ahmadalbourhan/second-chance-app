@@ -60,14 +60,61 @@ router.post('/', upload.single('file'), async (req, res, next) => {
         //Step 3: task 5 - insert code here
         const date_added = Math.floor(new Date().getTime() / 1000);
         secondChanceItem.date_added = date_added
+
+        //Handle image (if the file is not provided, assign a default image or leave it undefined)
+        if (req.file) {
+            secondChanceItem.image = `/images/${req.file.filename}`;
+        } else {
+            secondChanceItem.image = "/images/lamp.jpg"; // Default image
+        }
         // Step 3: Task 6 insert code here
         secondChanceItem = await collection.insertOne(secondChanceItem)
 
-        res.status(201).json(secondChanceItem.ops[0]);
+        // res.status(201).json(secondChanceItem.ops[0]);
+        res.status(201).json(secondChanceItem);
     } catch (e) {
         next(e);
     }
 });
+
+// Add a new item
+// router.post('/', upload.single('file'), async (req, res, next) => {
+//     try {
+//         // Step 3: task 1 - Connect to database
+//         const db = await connectToDatabase();
+//         // Step 3: task 2 - Get collection
+//         const collection = db.collection("secondChanceItems");
+//         // Step 3: task 3 - Get item data from request body
+//         let secondChanceItem = req.body;
+
+//         // Step 3: task 4 - Get the last item ID to increment
+//         const lastItemQuery = await collection.find().sort({ 'id': -1 }).limit(1);
+//         await lastItemQuery.forEach(item => {
+//             secondChanceItem.id = (parseInt(item.id) + 1).toString();
+//         });
+
+//         // Step 3: task 5 - Add date_added
+//         const date_added = Math.floor(new Date().getTime() / 1000);
+//         secondChanceItem.date_added = date_added;
+
+//         // Step 3: Task 6 - Insert the new item into the database
+//         const result = await collection.insertOne(secondChanceItem);
+
+//         // If file is uploaded, include its image path in the response
+//         if (req.file) {
+//             secondChanceItem.image = `/images/${req.file.originalname}`;
+//         }
+
+//         // Send the response with the inserted item
+//         res.status(201).json({
+//             id: result.insertedId,  // Return the insertedId
+//             ...secondChanceItem      // Return the full secondChanceItem with all fields
+//         });
+//     } catch (e) {
+//         next(e);
+//     }
+// });
+
 
 // Get a single secondChanceItem by ID
 router.get('/:id', async (req, res, next) => {
@@ -122,11 +169,18 @@ router.put('/:id', async (req, res, next) => {
             { returnDocument: 'after' } // Return the updated document
         );
 
+        console.log(" the result:", updateResult); // Log the result of the update operation
+
         // Step 5: Send confirmation
-        if (updateResult.value) {
+        // if (updateResult.value) {
+        //     res.json({ "updated": "success", "updatedItem": updateResult.value });
+        // } else {
+        //     res.json({ "updated": "failed" });
+        // }
+        if (updateResult) {
             res.json({ "updated": "success", "updatedItem": updateResult.value });
         } else {
-            res.json({ "updated": "failed" });
+            res.json({ "updated": "failed", "message": "No changes made" });
         }
 
     } catch (e) {
