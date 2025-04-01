@@ -89,26 +89,78 @@ router.get('/:id', async (req, res, next) => {
 });
 
 
-// Update and existing item
+// Update an existing item
 router.put('/:id', async (req, res, next) => {
     try {
-        //Step 5: task 1 - insert code here
-        //Step 5: task 2 - insert code here
-        //Step 5: task 3 - insert code here
-        //Step 5: task 4 - insert code here
-        //Step 5: task 5 - insert code here
+        // Step 1: Retrieve the database connection
+        const db = await connectToDatabase();
+
+        // Step 2: Get the secondChanceItems collection
+        const collection = db.collection("secondChanceItems");
+
+        // Step 3: Check if the item exists
+        const secondChanceItem = await collection.findOne({ "id": req.params.id });
+        if (!secondChanceItem) {
+            logger.error('secondChanceItem not found');
+            return res.status(404).json({ message: "secondChanceItem not found" });
+        }
+
+        // Step 4: Update the item with new values
+        const secondChanceItemUpdate = {
+            category: req.body.category,
+            condition: req.body.condition,
+            age_days: req.body.age_days,
+            description: req.body.description,
+            age_years: (req.body.age_days / 365).toFixed(1), // Convert days to years, 1 decimal place
+            updatedAt: new Date().toISOString() // Current date
+        };
+
+        // Perform the update
+        const updateResult = await collection.findOneAndUpdate(
+            { "id": req.params.id },  // Filter by "id"
+            { $set: secondChanceItemUpdate }, // Update data
+            { returnDocument: 'after' } // Return the updated document
+        );
+
+        // Step 5: Send confirmation
+        if (updateResult.value) {
+            res.json({ "updated": "success", "updatedItem": updateResult.value });
+        } else {
+            res.json({ "updated": "failed" });
+        }
+
     } catch (e) {
         next(e);
     }
 });
 
+
 // Delete an existing item
 router.delete('/:id', async (req, res, next) => {
     try {
-        //Step 6: task 1 - insert code here
-        //Step 6: task 2 - insert code here
-        //Step 6: task 3 - insert code here
-        //Step 6: task 4 - insert code here
+        // Step 1: Retrieve the database connection
+        const db = await connectToDatabase();
+
+        // Step 2: Get the secondChanceItems collection
+        const collection = db.collection("secondChanceItems");
+
+        // Step 3: Check if the item exists
+        const secondChanceItem = await collection.findOne({ "id": req.params.id });
+        if (!secondChanceItem) {
+            logger.error('secondChanceItem not found');
+            return res.status(404).json({ message: "secondChanceItem not found" });
+        }
+
+        // Step 4: Perform the deletion
+        const deleteResult = await collection.deleteOne({ "id": req.params.id });
+
+        // Step 5: Send confirmation
+        if (deleteResult.deletedCount > 0) { // deletedCount is a property returned by MongoDB
+            res.json({ "deleted": "success" });
+        } else {
+            res.json({ "deleted": "failed" });
+        }
+
     } catch (e) {
         next(e);
     }
