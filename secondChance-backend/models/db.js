@@ -14,7 +14,7 @@ async function connectToDatabase() {
     };
 
     
-    // Task 1: Connect to MongoDB
+    // Task 1 : Connect to MongoDB
     
     try {
         const client = new MongoClient(url);
