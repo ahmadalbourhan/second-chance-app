@@ -50,6 +50,12 @@ function DetailsPage() {
     if (error) return <div>Error: {error}</div>;
     if (!gift) return <div className="container mt-5">Gift not found</div>;
 
+    console.log('----')
+    console.log(gift.image); // This should print the image path or filename
+    console.log(urlConfig.backendUrl); // This should print the base URL of the backend
+    console.log(urlConfig.backendUrl + gift.image); // This should print the full URL for the image
+
+
     return (
         <div className="container mt-5">
             <button className="btn btn-secondary mb-3" onClick={handleBackClick}>Back</button>
@@ -60,7 +66,7 @@ function DetailsPage() {
                 <div className="card-body">
                     <div className="image-placeholder-large">
                         {gift.image ? (
-                            <img src={urlConfig.backendUrl+gift.image} alt={gift.name} className="product-image-large" />
+                            <img src={urlConfig.backendUrl + gift.image} alt={gift.name} className="product-image-large" />
                         ) : (
                             <div className="no-image-available-large">No Image Available</div>
                         )}
@@ -75,7 +81,7 @@ function DetailsPage() {
             </div>
             <div className="comments-section mt-4">
                 <h3 className="mb-3">Comments</h3>
-                {gift.comments.length >0 && gift.comments.map((comment, index) => (
+                {gift.comments.length > 0 && gift.comments.map((comment, index) => (
                     <div key={index} className="card mb-3">
                         <div className="card-body">
                             <p className="comment-author"><strong>{comment.author}:</strong></p>

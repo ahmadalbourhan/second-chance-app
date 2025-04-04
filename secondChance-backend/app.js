@@ -4,8 +4,11 @@ const express = require('express');
 const cors = require('cors');
 const pinoLogger = require('./logger');
 
+const path = require('path');
+
+
 const connectToDatabase = require('./models/db');
-const { loadData } = require("./util/import-mongo/index");
+// const { loadData } = require("./util/import-mongo/index");
 
 
 const app = express();
@@ -20,6 +23,9 @@ connectToDatabase().then(() => {
 
 
 app.use(express.json());
+
+app.use('/images', express.static(path.join(__dirname, 'public', 'images')));
+
 
 // Route files
 const authRoutes = require('./routes/authRoutes');
