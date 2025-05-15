@@ -5,7 +5,7 @@ const fs = require('fs');
 // MongoDB connection URL with authentication options
 let url = `${process.env.MONGO_URL}`;
 let filename = `${__dirname}/secondChanceItems.json`;
-const dbName = 'secondChance';
+const dbName = 'second-chance';
 const collectionName = 'secondChanceItems';
 
 // notice you have to load the array of items into the data object
